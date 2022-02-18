@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.css" rel="stylesheet">
+    <style>
+        body {
+            width: 800px;
+        }
+        form{
+            padding:12px;
+        }
+        .table{
+            width:50%;
+            margin-left: 10px;
+        }
+        [hidden]{
+            display: none;
+        }
+        .error{
+            margin-left: 10px;
+            width:300px;
+            height:30px;
+            background-color: blanchedalmond;
+            text-align: center;
+        }
+    </style>
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script> -->
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.js"></script> -->
+    
+</head>
+
+<body>
+    <form action="">
+        <div class="form-group">
+            
+        <label for="name">Name</label>
+        <input type="text" placeholder="write your name" name="name" class="form-control col-5" autocomplete="off">
+    </div>
+    <div class="form-group">
+        <label for="age" class="form-group" >Age</label>
+        <input type="text" name="age" class="form-control col-5" placeholder="only 18 above is available..." autocomplete="off">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <div class="error" hidden>
+        
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+        
+    </table>
+    <script>
+        class UserBuilder{
+            constructor(){
+                this.user = new User;
+
+            }
+            setName(name){
+                if(name.length >10 || name.length < 0 )
+                    throw "it should less then 1 and till 4 10 character"
+                this.user.name = name;
+                
+            }
+            setAge(age){
+                var age  = parseFloat(age) 
+               
+                if (age === 0  ){
+                    throw "it has to be number";
+                }else if (age >= 100){
+                    throw "it is no posible"
+                }
+                this.user.age = age;
+
+            }
+            build(){
+                
+                
+                return this.user;
+            }
+        }
+        
+
+        class Userform {
+            constructor(selector, userlist, submit){
+                this.el = document.querySelector(selector);
+                this.list = userlist;
+                this.onsubmit = submit;
+                
+                this.el.addEventListener("submit", e=>{
+                    e.preventDefault();
+
+                    var data = {};
+                    data.name = this.el.querySelector("input[name=name]").value;
+                    data.age = this.el.querySelector("input[name=age]").value;
+                    
+                    this.onsubmit(data)
+
+                    this.el.reset();
+
+
+                })
+
+            }
+        }
+        
+        
+        class User{
+            constructor(name, age, userlist){
+                this.name = name;
+                this.age = age;
+
+            }
+        }
+
+        class Userlist{
+            constructor(){
+                this.list = []
+            }
+            add(user){
+                this.list.push(user)
+
+            }
+            all(){
+                return this.list;
+            }
+            
+        }
+
+
+        class TableView {
+            constructor(selector, listdata){
+                this.el = document.querySelector(selector);
+                this.$list = listdata.all();
+                this.render();
+
+
+            }
+            print(){
+                console.log(this.$list)
+            }
+            render(){
+                var me = this.el;
+                var tr = document.createElement("tr");
+                this.$list.forEach(element => {
+                    tr.innerHTML = 
+                    `
+                    <td>${element.name}</td>
+                    <td>${element.age}</td>
+                    
+                    `
+                    me.appendChild(tr);
+                    
+                    
+
+                });
+
+            }
+
+        }
+
+
+        var userlist = new Userlist();
+        var table = new TableView("table", userlist)
+
+        new Userform("form", userlist, data=>{
+            var builder = new UserBuilder();
+            try{
+                builder.setName(data.name);
+                builder.setAge(data.age);
+
+            }catch(e){
+                
+                console.log(e)
+                var errormsg = document.querySelector(".error");
+                console.log(errormsg)
+                errormsg.hidden = false;
+                errormsg.innerHTML = e;
+                return;
+            }
+            var newuser = builder.build();
+
+            
+            
+            userlist.add(newuser);
+            table.render();
+            
+
+
+            // console.log(userlist.list)
+        })
+       
+        
+
+
+        
+        // var getform = document.querySelector("form");
+        // var data = getform.addEventListener("submit", e=>{
+        //     e.preventDefault();
+        //     var data = {}
+        //     data.name = getform.querySelector("input[name=name]").value;
+        //     data.age =  getform.querySelector("input[name=age]").value;
+        //     console.log(data)
+        //     var table = document.querySelector("table")
+        //     var tr = document.createElement("tr");
+        //     tr.innerHTML = 
+        //     `
+        //         <td>${data.name}</td>
+        //         <td>${data.age}</td>
+        //     `
+        //     table.appendChild(tr);
+            
+        // })
+
+        
+
+    </script>
+</body>
+
+</html>
